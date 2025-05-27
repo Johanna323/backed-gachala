@@ -32,18 +32,24 @@ RUN composer install --no-scripts
 # Copy existing application directory
 COPY . .
 
+# Remove default Nginx configuration
+RUN rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
+
 # Copy nginx configuration
-COPY docker/nginx/app.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx/app.conf /etc/nginx/sites-available/
+RUN ln -s /etc/nginx/sites-available/app.conf /etc/nginx/sites-enabled/
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www/storage \
+    && chmod -R 755 /var/www/bootstrap/cache
 
 # Expose port 80
 EXPOSE 80
 
 # Create startup script
 RUN echo '#!/bin/sh\n\
-nginx\n\
+nginx -g "daemon off;" & \n\
 php-fpm\n\
 ' > /usr/local/bin/start.sh && chmod +x /usr/local/bin/start.sh
 
