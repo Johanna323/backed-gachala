@@ -21,9 +21,9 @@ return [
 
     'allowed_origins' => ['*'], // Add your frontend URL here
 
-    'allowed_origins_patterns' => [*],
+    'allowed_origins_patterns' => ['*'],
 
-    'allowed_headers' => [*],
+    'allowed_headers' => ['*'],
 
     'exposed_headers' => [],
 
