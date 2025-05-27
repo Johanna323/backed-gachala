@@ -47,7 +47,7 @@ class UserController extends Controller
             'municipio' => 'nullable|string|max:100',
             'departamento' => 'nullable|string|max:100',
             'pais' => 'nullable|string|max:100',
-            'fecha_nacimiento' => 'nullable|date',
+            'fecha_nacimiento' => 'nullable|date_format:Y-m-d',
             'genero_id' => 'nullable|exists:generos,id',
             'activo' => 'boolean',
             'role_id' => 'nullable|exists:roles,id',
@@ -57,6 +57,12 @@ class UserController extends Controller
         }
         $data = $request->all();
         $data['contrasena'] = bcrypt($data['contrasena']);
+        
+        // Format fecha_nacimiento if it exists
+        if (isset($data['fecha_nacimiento'])) {
+            $data['fecha_nacimiento'] = date('Y-m-d', strtotime($data['fecha_nacimiento']));
+        }
+        
         $user = User::create($data);
         return response()->json($user, 201);
     }
@@ -106,7 +112,7 @@ class UserController extends Controller
             'municipio' => 'nullable|string|max:100',
             'departamento' => 'nullable|string|max:100',
             'pais' => 'nullable|string|max:100',
-            'fecha_nacimiento' => 'nullable|date',
+            'fecha_nacimiento' => 'nullable|date_format:Y-m-d',
             'genero_id' => 'nullable|exists:generos,id',
             'activo' => 'boolean',
             'role_id' => 'nullable|exists:roles,id',
@@ -120,6 +126,12 @@ class UserController extends Controller
         } else {
             unset($data['contrasena']);
         }
+
+        // Format fecha_nacimiento if it exists
+        if (isset($data['fecha_nacimiento'])) {
+            $data['fecha_nacimiento'] = date('Y-m-d', strtotime($data['fecha_nacimiento']));
+        }
+        
         $user->update($data);
         return response()->json($user, 200);
     }
