@@ -22,24 +22,20 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
+# Copy composer files first
+COPY composer.json composer.lock ./
+
+# Install composer dependencies
+RUN composer install --no-scripts
+
 # Copy existing application directory
-COPY . /var/www
+COPY . .
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www
 
-# Generate application key
-RUN php artisan key:generate
+# Expose port 9000
+EXPOSE 9000
 
-# Configure Apache
-RUN a2enmod rewrite
-COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
-
-# Expose port 80
-EXPOSE 80
-
-# Add startup script
-COPY docker/start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
-
-CMD ["/usr/local/bin/start.sh"] 
+# Start PHP-FPM
+CMD ["php-fpm"] 
