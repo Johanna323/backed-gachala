@@ -1,4 +1,4 @@
-FROM php:8.0-apache
+FROM php:8.0-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -20,23 +20,16 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /var/www
 
-# Copy composer files first to leverage Docker cache
-COPY composer.json composer.lock ./
+# Copy existing application directory
+COPY . /var/www
 
-# Install dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Copy the rest of the application
-COPY . .
+# Set permissions
+RUN chown -R www-data:www-data /var/www
 
 # Generate application key
 RUN php artisan key:generate
-
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage
 
 # Configure Apache
 RUN a2enmod rewrite
