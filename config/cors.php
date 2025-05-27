@@ -19,11 +19,11 @@ return [
 
     'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
-    'allowed_origins' => ['http://localhost:4200', 'http://localhost:5173', '*'], // Add your frontend URL here
+    'allowed_origins' => ['*'], // Add your frontend URL here
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [*],
 
-    'allowed_headers' => ['Content-Type', 'X-Requested-With', 'Authorization', 'X-XSRF-TOKEN'],
+    'allowed_headers' => [*],
 
     'exposed_headers' => [],
 
