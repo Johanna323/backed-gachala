@@ -33,6 +33,14 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+
+        // Formatear la fecha antes de la validación
+        if ($request->has('fecha_nacimiento')) {
+            $request->merge([
+                'fecha_nacimiento' => date('Y-m-d', strtotime($request->fecha_nacimiento))
+            ]);
+        }
+
         $validator = Validator::make($request->all(), [
             'primer_nombre' => 'required|string|max:100',
             'segundo_nombre' => 'nullable|string|max:100',
@@ -57,11 +65,6 @@ class UserController extends Controller
         }
         $data = $request->all();
         $data['contrasena'] = bcrypt($data['contrasena']);
-        
-        // Format fecha_nacimiento if it exists
-        if (isset($data['fecha_nacimiento'])) {
-            $data['fecha_nacimiento'] = date('Y-m-d', strtotime($data['fecha_nacimiento']));
-        }
         
         $user = User::create($data);
         return response()->json($user, 201);
@@ -98,6 +101,14 @@ class UserController extends Controller
         if (!$user) {
             return response()->json(['error' => 'Usuario no encontrado'], 404);
         }
+
+        // Formatear la fecha antes de la validación
+        if ($request->has('fecha_nacimiento')) {
+            $request->merge([
+                'fecha_nacimiento' => date('Y-m-d', strtotime($request->fecha_nacimiento))
+            ]);
+        }
+
         $validator = Validator::make($request->all(), [
             'primer_nombre' => 'sometimes|required|string|max:100',
             'segundo_nombre' => 'nullable|string|max:100',
@@ -127,11 +138,6 @@ class UserController extends Controller
             unset($data['contrasena']);
         }
 
-        // Format fecha_nacimiento if it exists
-        if (isset($data['fecha_nacimiento'])) {
-            $data['fecha_nacimiento'] = date('Y-m-d', strtotime($data['fecha_nacimiento']));
-        }
-        
         $user->update($data);
         return response()->json($user, 200);
     }
