@@ -1,17 +1,24 @@
 version: '3'
 services:
-  app:
+  web:
     build:
       context: .
       dockerfile: Dockerfile
-    image: gachala-app
-    container_name: gachala-app
-    restart: unless-stopped
-    working_dir: /var/www
+    ports:
+      - "80:80"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_KEY=${APP_KEY}
+      - DB_CONNECTION=${DB_CONNECTION}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
     volumes:
-      - ./:/var/www
-    networks:
-      - gachala-network
+      - .:/var/www
+    restart: unless-stopped
 
   webserver:
     image: nginx:alpine

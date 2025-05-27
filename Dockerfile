@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
-    unzip
+    unzip \
+    nginx
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -31,11 +32,20 @@ RUN composer install --no-scripts
 # Copy existing application directory
 COPY . .
 
+# Copy nginx configuration
+COPY docker/nginx/app.conf /etc/nginx/conf.d/default.conf
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www
 
-# Expose port 9000
-EXPOSE 9000
+# Expose port 80
+EXPOSE 80
 
-# Start PHP-FPM
-CMD ["php-fpm"] 
+# Create startup script
+RUN echo '#!/bin/sh\n\
+nginx\n\
+php-fpm\n\
+' > /usr/local/bin/start.sh && chmod +x /usr/local/bin/start.sh
+
+# Start both nginx and php-fpm
+CMD ["/usr/local/bin/start.sh"] 
